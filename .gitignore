@@ -1,0 +1,55 @@
+# Root .gitignore
+
+# Node modules (React frontend)
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/build/
+frontend/dist/
+frontend/.next/
+frontend/.turbo/
+frontend/coverage/
+frontend/yarn-error.log
+frontend/npm-debug.log
+
+# macOS and system files
+.DS_Store
+Thumbs.db
+
+# Django
+backend/__pycache__/
+backend/**/*.py[cod]
+backend/*.sqlite3
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/.env
+backend/.venv/
+backend/venv/
+backend/env/
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/.coverage
+backend/htmlcov/
+backend/*.log
+backend/local_settings.py
+backend/.idea/
+backend/*.pot
+
+# Python Bytecode and cache
+*.py[cod]
+__pycache__/
+
+# Virtual environments (if in project)
+env/
+venv/
+.venv/
+
+# IDE files
+*.swp
+.vscode/
+.idea/
+*.iml
