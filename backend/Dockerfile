@@ -1,4 +1,4 @@
-FROM python:3.9-buster AS builder
+FROM python:3.10-buster AS builder
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -15,7 +15,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-FROM python:3.9-slim-buster AS production
+FROM python:3.10-slim-buster AS production
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
