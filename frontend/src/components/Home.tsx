@@ -5,11 +5,54 @@ import { generateReadme } from '../services/api';
 const Home: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
+  const [urlError, setUrlError] = useState<string>('');
   const navigate = useNavigate();
+
+  const validateGitHubUrl = (url: string): boolean => {
+    if (!url.trim()) return false;
+    
+    try {
+      const urlObj = new URL(url);
+      
+      if (urlObj.hostname !== 'github.com' && urlObj.hostname !== 'www.github.com') {
+        return false;
+      }
+      
+      const pathParts = urlObj.pathname.split('/').filter(part => part.length > 0);
+      
+      if (pathParts.length < 2) {
+        return false;
+      }
+      
+      const [username, repository] = pathParts;
+      const validPattern = /^[a-zA-Z0-9._-]+$/;
+      
+      return validPattern.test(username) && validPattern.test(repository);
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setRepoUrl(url);
+    
+    if (urlError) {
+      setUrlError('');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!validateGitHubUrl(repoUrl)) {
+      setUrlError('Please enter a valid GitHub repository URL (e.g., https://github.com/username/repository)');
+      return;
+    }
+    
     setLoading(true);
+    setUrlError('');
+    
     try {
       const res = await generateReadme(repoUrl);
       navigate('/editor', { state: { readme: res.readme } });
@@ -90,13 +133,13 @@ const Home: React.FC = () => {
               type="url"
               placeholder="https://github.com/username/repository"
               value={repoUrl}
-              onChange={(e) => setRepoUrl(e.target.value)}
+              onChange={handleUrlChange}
               required
               style={{
                 width: '100%',
                 padding: '1rem 1.5rem',
                 fontSize: '1rem',
-                border: '2px solid #e2e8f0',
+                border: `2px solid ${urlError ? '#e53e3e' : '#e2e8f0'}`,
                 borderRadius: '12px',
                 outline: 'none',
                 backgroundColor: '#ffffff',
@@ -105,14 +148,38 @@ const Home: React.FC = () => {
                 fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
               }}
               onFocus={(e) => {
-                e.target.style.borderColor = '#667eea';
-                e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                if (!urlError) {
+                  e.target.style.borderColor = '#667eea';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(102, 126, 234, 0.1)';
+                }
               }}
               onBlur={(e) => {
-                e.target.style.borderColor = '#e2e8f0';
-                e.target.style.boxShadow = 'none';
+                if (!urlError) {
+                  e.target.style.borderColor = '#e2e8f0';
+                  e.target.style.boxShadow = 'none';
+                }
               }}
             />
+            
+            {urlError && (
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: '0',
+                right: '0',
+                marginTop: '0.5rem',
+                padding: '0.5rem',
+                backgroundColor: '#fed7d7',
+                border: '1px solid #feb2b2',
+                borderRadius: '8px',
+                color: '#c53030',
+                fontSize: '0.875rem',
+                textAlign: 'left',
+                zIndex: 10
+              }}>
+                {urlError}
+              </div>
+            )}
           </div>
 
           <button
